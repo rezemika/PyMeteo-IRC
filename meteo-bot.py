@@ -75,7 +75,7 @@ def meteo_ville(serv, ville): #Comme la fonction meteo_ville(), mais avec une so
 	vent = meteo["wind"]["speed"]
 	serv.privmsg(canal, meteo['name'] + " (" + str(meteo['sys']['country']) + ") : " + heure_mesure + " UTC | T " + str(temp) + "°C | W " + str(round(windchill(temp, vent),2)) + "°C | V " + str(vent) + "m/s | P " + pluie + "mm | N " + neige + "mm | C " + str(meteo["clouds"]["all"]) + "% | H " + str(meteo["main"]["humidity"]) + "% | Lat/Lon " + str(meteo['coord']['lat']) + "° " + str(meteo['coord']['lon']) + "°")
 
-def concours(serv): #Concours : calcul et affichage des scores
+def concours(serv): #Concours : calcul et affichage des scores.
 	villes_list = [{ 'Ville': city, 'Pseudo': nick } for (city, nick) in cfg.items('Villes')]
 	i = 0
 	for elem in villes_list:
@@ -157,6 +157,10 @@ class BotMeteo(irc.bot.SingleServerIRCBot):
 			elif com[0] == "ville":
 				if len(com) == 2:
 					try: meteo_ville(serv, com[1])
+					except KeyError: serv.privmsg(canal, "Erreur lors de la lecture des données ('KeyError').")
+					except HTTPError: serv.privmsg(canal, "Erreur lors de la connexion au serveur de l'API ('HTTPError').")
+					except TimeoutError: serv.privmsg(canal, "Erreur : le serveur d'API met trop de temps à répondre ('TimeoutError').")
+					except Request: serv.privmsg(canal, "Erreur lors de la connexion au serveur de l'API ('Request').")
 					except: serv.privmsg(canal, "Une erreur est survenue pendant l'exécution du script.")
 				else:
 					serv.privmsg(canal, "Erreur : indiquez le nom de la ville, sans espace.")
@@ -166,13 +170,17 @@ class BotMeteo(irc.bot.SingleServerIRCBot):
 				if len(com) == 2:
 					ville = com[1]
 					try: meteo_ville_long(serv, ville, pseudo)
+					except KeyError: serv.privmsg(canal, "Erreur lors de la lecture des données ('KeyError').")
+					except HTTPError: serv.privmsg(canal, "Erreur lors de la connexion au serveur de l'API ('HTTPError').")
+					except TimeoutError: serv.privmsg(canal, "Erreur : le serveur d'API met trop de temps à répondre ('TimeoutError').")
+					except Request: serv.privmsg(canal, "Erreur lors de la connexion au serveur de l'API ('Request').")
 					except: serv.privmsg(canal, "Une erreur est survenue pendant l'exécution du script.")
 				else:
 					serv.privmsg(canal, "Erreur : indiquez le nom de la ville, sans espace.")
 			
 			#Sous-commandes de concours
 			elif com[0] == "concours":
-				if len(com) >= 2:
+				if len(com) == 2:
 					if com[1] == "villes-list": #Liste des villes enregistrées et leurs concourants
 						villes_list = dict(cfg.items('Villes'))
 						for elem in villes_list: serv.privmsg(pseudo, elem.title() + " : " + cfg.get('Villes', elem))
@@ -180,8 +188,11 @@ class BotMeteo(irc.bot.SingleServerIRCBot):
 						try:
 							concours(serv)
 							print("Commande 'concours' émise par " + pseudo + " à " + time.strftime('%H:%M %d/%m/%Y'))
-						except:
-							serv.privmsg(canal, "Une erreur est survenue.")
+						except KeyError: serv.privmsg(canal, "Erreur lors de la lecture des données ('KeyError').")
+						except HTTPError: serv.privmsg(canal, "Erreur lors de la connexion au serveur de l'API ('HTTPError').")
+						except TimeoutError: serv.privmsg(canal, "Erreur : le serveur d'API met trop de temps à répondre ('TimeoutError').")
+						except Request: serv.privmsg(canal, "Erreur lors de la connexion au serveur de l'API ('Request').")
+						except: serv.privmsg(canal, "Une erreur est survenue.")
 				else:
 					serv.privmsg(canal, "Erreur : indiquez la sous-commande de concours.")
 			
@@ -189,6 +200,10 @@ class BotMeteo(irc.bot.SingleServerIRCBot):
 			elif com[0] == "score":
 				if len(com) >= 2:
 					try: serv.privmsg(canal, "Score de " + com[1] + " : " + str(score(com[1])))
+					except KeyError: serv.privmsg(canal, "Erreur lors de la lecture des données ('KeyError').")
+					except HTTPError: serv.privmsg(canal, "Erreur lors de la connexion au serveur de l'API ('HTTPError').")
+					except TimeoutError: serv.privmsg(canal, "Erreur : le serveur d'API met trop de temps à répondre ('TimeoutError').")
+					except Request: serv.privmsg(canal, "Erreur lors de la connexion au serveur de l'API ('Request').")
 					except: serv.privmsg(canal, "Une erreur est survenue.")
 				else:
 					serv.privmsg(canal, "Erreur : indiquez le nom de la ville.")

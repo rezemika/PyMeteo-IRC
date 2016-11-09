@@ -15,103 +15,8 @@ vhf : aide pour l'écriture
 Pesticide : aide pour le portage sous Python3
 '''
 
-try: #Importation des modules.
-	import irc
-	import irc.bot
-	import time
-	from datetime import datetime
-	import requests
-	import configparser
-	cfg = configparser.ConfigParser()
-	from operator import itemgetter
-except:
-	print("Erreur à l'importation des modules")
-	exit()
-
-try: #Récupération de la configuration.
-	cfg.read("config.cfg")
-	serveur = cfg.get('General', 'serveur')
-	canal = cfg.get('General', 'canal')
-	message_join = cfg.get('General', 'message_join')
-	message_quit = cfg.get('General', 'message_quit')
-	meteoapi = str(cfg.get('General', 'meteo_api') + "?appid=" + cfg.get('General', 'api_key'))
-except: #Configuration "de secours" en cas d'erreur.
-	print("Erreur à la lecture du fichier config.cfg")
-	exit()
-
-##### Fonctions
-
-def meteo_ville_long(serv, ville, pseudo): #Récupération et affichage de la météo d'une ville (en MP).
-	meteo = get_meteo(ville)
-	heure_mesure = datetime.utcfromtimestamp(meteo["dt"]).strftime('%H:%M %d/%m/%Y')
-	serv.privmsg(pseudo, "Météo de " + meteo['name'] + " (" + str(meteo['sys']['country']) + ") :")
-	serv.privmsg(pseudo, "Heure du relevé : " + heure_mesure + " UTC")
-	serv.privmsg(pseudo, "Latitude / Longitude : " + str(meteo['coord']['lat']) + str(meteo['coord']['lon']) + "° ")
-	serv.privmsg(pseudo, " ")
-	temp = round(k2c(float(meteo["main"]["temp"])),2)
-	vent = meteo["wind"]["speed"]
-	serv.privmsg(pseudo, "Température : " + str(temp) + "°C")
-	serv.privmsg(pseudo, "Windchill : " + str(round(windchill(temp, vent),2)) + "°C")
-	serv.privmsg(pseudo, "Humidité : " + str(meteo["main"]["humidity"]) + "%")
-	serv.privmsg(pseudo, "Pression : " + str(meteo["main"]["pressure"]) + "hPa")
-	serv.privmsg(pseudo, "Vent : " + str(vent) + "m/s")
-	serv.privmsg(pseudo, "Couverture nuageuse : " + str(meteo["clouds"]["all"]) + "%")
-	try: pluie = str(meteo["rain"]["3h"]) #Les clés 'rain' et 'snow' sont absentes en cas d'absence de pluie ou de neige.
-	except: pluie = "0"
-	try: neige = str(meteo["snow"]["3h"])
-	except: neige = "0"
-	serv.privmsg(pseudo, "Précipitations : " + pluie + "mm")
-	serv.privmsg(pseudo, "Neige : " + neige + "mm")
-	serv.privmsg(pseudo, " ")
-
-def meteo_ville(serv, ville): #Comme la fonction meteo_ville(), mais avec une sortie textuelle plus sobre.
-	meteo = get_meteo(ville)
-	heure_mesure = datetime.utcfromtimestamp(meteo["dt"]).strftime('%H:%M %d/%m/%Y')
-	try: pluie = str(meteo["rain"]["3h"])
-	except: pluie = "0"
-	try: neige = str(meteo["snow"]["3h"])
-	except: neige = "0"
-	temp = round(k2c(float(meteo["main"]["temp"])),2)
-	vent = meteo["wind"]["speed"]
-	serv.privmsg(canal, meteo['name'] + " (" + str(meteo['sys']['country']) + ") : " + heure_mesure + " UTC | T " + str(temp) + "°C | W " + str(round(windchill(temp, vent),2)) + "°C | V " + str(vent) + "m/s | P " + pluie + "mm | N " + neige + "mm | C " + str(meteo["clouds"]["all"]) + "% | H " + str(meteo["main"]["humidity"]) + "% | Lat/Lon " + str(meteo['coord']['lat']) + "° " + str(meteo['coord']['lon']) + "°")
-
-def concours(serv): #Concours : calcul et affichage des scores.
-	villes_list = [{ 'Ville': city, 'Pseudo': nick } for (city, nick) in cfg.items('Villes')]
-	i = 0
-	for elem in villes_list:
-		score_city = score(villes_list[i]['Ville']) #Obtention du score de la ville.
-		villes_list[i]['Score']=score_city
-		i += 1
-	villes_list = sorted(villes_list, key=itemgetter('Score'))
-	for elem in villes_list:
-		serv.privmsg(canal, "Score " + cfg.get('Villes', elem['Ville']) + " @ " + elem['Ville'].title() + " : " + str(elem['Score']))
-	serv.privmsg(canal, "Vainqueur : " + cfg.get('Villes', villes_list[-1]['Ville']).title() + ".")
-	serv.privmsg(canal, "Houra pour " + villes_list[-1]['Ville'].title() + " !")
-
-def score(ville): #Calcule et retourne le score d'une ville fournie en argument.
-	meteo = get_meteo(ville)
-	temp = round(k2c(float(meteo["main"]["temp"])),2)
-	vent = round(meteo["wind"]["speed"],2)
-	nuages = meteo["clouds"]["all"]
-	try: pluie = meteo["rain"]["3h"]
-	except: pluie = 0
-	try: neige = meteo["snow"]["3h"]
-	except: neige = 0
-	windchill_temp = windchill(temp, vent)
-	#Formule originale par vhf : (-temp)*1000 + vent*100 + neige*10 + pluie
-	return round(((-windchill_temp)*100 + neige*20 + pluie*80 + nuages*5)) #Calcul du score.
-
-def get_meteo(ville): #Obtention de la météo d'une ville.
-	meteo = requests.get(meteoapi + "&q=" + ville).json()
-	return meteo
-
-def k2c(t): #Conversion Kelvins -> Degrés Celsius.
-		return t-273.15
-
-def windchill(temp, vent): #Calcul de l'indice de refroidissement éolien.
-	return 13.2 + 0.6215*temp + (0.3965*temp - 11.37) * (vent*3.6)**0.16
-
-
+from fonctions import *
+read_config()
 
 # Class du bot IRC.
 class BotMeteo(irc.bot.SingleServerIRCBot):
@@ -144,6 +49,7 @@ class BotMeteo(irc.bot.SingleServerIRCBot):
 				serv.privmsg(pseudo, "concours villes-list - Liste les concourants enregistrés et leurs villes (par MP).")
 				serv.privmsg(pseudo, "concours go - Trouve le gagnant parmis les concourants enregistrés.")
 				serv.privmsg(pseudo, "score [VILLE] - Calcul isolément le score d'une ville.")
+				serv.privmsg(pseudo, "ephem [VILLE] - Affiche l'éphéméride d'une ville, en heures UTC.")
 				serv.privmsg(pseudo, "kill / quit- Ordonne la déconnexion de PyMeteo.")
 				serv.privmsg(pseudo, " ")
 				serv.privmsg(pseudo, "L'opérande [VILLE] peut accepter un nom de ville, un code postal ou un code d'aéroport. Elle peut être suivie par un nom ou un code de pays, séparé par une virgule (sans espace). Par exemple : 'PyMeteo: score 75000,FR'.")
@@ -205,6 +111,10 @@ class BotMeteo(irc.bot.SingleServerIRCBot):
 					except: serv.privmsg(canal, "Une erreur est survenue.")
 				else:
 					serv.privmsg(canal, "Erreur : indiquez le nom de la ville.")
+			
+			#Affichage de l'éphéméride
+			elif com[0] == "ephem":
+				serv.privmsg(canal, ephem(com[1]))
 			
 			#Demande de déconnexion
 			elif com[0] == "kill" or com[0] == "quit": #Cette commande est volontairement non-restreinte.

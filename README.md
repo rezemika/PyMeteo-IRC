@@ -2,8 +2,7 @@
 Un bot IRC codé en Python, permettant d'afficher la météo et de gérer un "concours de mauvais temps".
 
 ##Présentation
-PyMeteo est un bot IRC fonctionnant avec Python 3. Il peut être configuré grâce à un fichier config.cfg, contenant la configuration générale du bot, ainsi que la liste des villes et des personnes "inscrites" au concours.
-Il affiche des messages de statut sur le terminal qui l'exécute, permettant de connaître le statut du bot sans être connecté au canal IRC.
+PyMeteo est un bot IRC fonctionnant avec Python 3. Il peut être configuré grâce à un fichier config.cfg, contenant la configuration générale du bot, la liste des villes et des personnes "inscrites" au concours, ainsi que les traductions des expressions météos. Il contient également un fichier fonctions.py, qui doit être dans le même dossier que le fichier principal, et qui contient les fonctions en relation directe avec l'API météorologique. Il affiche des messages de statut sur le terminal qui l'exécute, permettant de connaître le statut du bot sans être connecté au canal IRC.
 
 Ces messages s'affichent :
 - en cas d'erreur de chargement d'un des modules requis ;
@@ -51,6 +50,9 @@ Oslo (NO) : 17:52 31/10/2016 UTC | T 4.79°C | W 3.58°C | V 1.65m/s | P 4.515mm
 ###ville-long
 Cette commande s'appelle de la même manière que la commande "ville". La différence réside dans le fait que celle-ci retourne la météo sous la forme d'un texte plus explicite. L'envoi se fait par MP à l'utilisateur émetteur de la commande, afin de ne pas "noyer" le canal.
 
+###ephem
+La commande "ephem" affiche l'éphéméride de la ville qu'on lui passe en argument, en heures UTC (au format HH:MM:SS). Voici par exemple le retour de "PyMeteo: ephem Québec" : "Éphéméride UTC pour Québec (CA) : 11:59:20 / 21:03:51".
+
 ###concours villes-list
 Retourne la liste de toutes les villes enregistrées dans le fichier de configuration, ainsi que leurs concourants respectifs.
 
@@ -79,7 +81,7 @@ Il nécessite les modules suivants :
 - operator
 
 ##Configuration
-Le fichier config.cfg contient deux sections : [General] et [Villes]. Cette dernière n'est utilisée que pour la fonction de concours. Elle peut-être laissée vide si celle-ci n'est pas utilisée. Ce fichier doit être dans le même dossier que le fichier du script.
+Le fichier config.cfg contient trois sections : [General], [Villes] et [Keywords]. La section [Villes] n'est utilisée que pour la fonction de concours. Elle peut-être laissée vide si celle-ci n'est pas utilisée. Ce fichier doit être dans le même dossier que le fichier du script.
 
 La section [General] contient les "paramètres vitaux" du bot. La clé "serveur" prend une adresse de serveur IRC. La clé "cannal" prend le nom du canal où le bot devra se connecter. Le nom de canal devra être écrit avec le croisillon "#".
 
@@ -92,6 +94,8 @@ Paris = Pierre
 Québec = Paul
 
 Acapulco = Jacques
+
+La section [Keywords] contient toutes les expressions utilisables par le bot, décrivant la météo d'une ville. L'API météorologique retournant un ID spécifique à chaque phénomène météo, cette section contient la description en français de ces ID. Leur liste peut être trouvée ici : https://openweathermap.org/weather-conditions.
 
 ##API
 Ce programme utilises l'API OpenWeatherMap (openweathermap.org), qui fourni des données météorologiques sous licence CC By-SA 4.0.

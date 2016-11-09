@@ -66,6 +66,7 @@ La commande "score" permet de calculer de manière isolée le score d'une ville.
 Le calcul du score d'une ville tient compte de la température ressentie, de la pluie, de la neige et de la couverture nuageuse.
 
 Voici la formule exacte : (-Windchill) x 100 + neige x 20 + pluie x 80 + nuages x 5
+
 Ou, au format Python : (-windchill_temp)*100 + neige*20 + pluie*80 + nuages*5
 
 La température ressentie est en degrés Celsius, la pluie et la neige sont en millimètres, la couverture nuageuse est un pourcentage.
@@ -85,8 +86,7 @@ Le fichier config.cfg contient trois sections : [General], [Villes] et [Keywords
 
 La section [General] contient les "paramètres vitaux" du bot. La clé "serveur" prend une adresse de serveur IRC. La clé "cannal" prend le nom du canal où le bot devra se connecter. Le nom de canal devra être écrit avec le croisillon "#".
 
-La section [Ville] contient les candidats au concours. Les clés sont les villes, et leurs concourants sont marqués comme valeur de la clé correspondante.
-Voici un exemple, où les utilisateurs Pierre, Paul et Jacques concourent respectivement pour les villes de Paris, Québec et Acapulco.
+La section [Ville] contient les candidats au concours. Les clés sont les villes, et leurs concourants sont marqués comme valeur de la clé correspondante. Voici un exemple, où les utilisateurs Pierre, Paul et Jacques concourent respectivement pour les villes de Paris, Québec et Acapulco.
 
 
 Paris = Pierre

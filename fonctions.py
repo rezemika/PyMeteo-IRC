@@ -86,7 +86,9 @@ def concours(serv): #Concours : calcul et affichage des scores.
 		i += 1
 	villes_list = sorted(villes_list, key=itemgetter('Score'))
 	for elem in villes_list:
-		serv.privmsg(canal, "Score " + cfg.get('Villes', elem['Ville']) + " @ " + elem['Ville'].title() + " : " + str(elem['Score']))
+		pseudo = cfg.get('Villes', elem['Ville'])
+		#pseudo[:1] + u'\u200b' + pseudo[1:] : insère un caractère de longueur nulle, évitant le HL. Merci à Pesticide.
+		serv.privmsg(canal, "Score " + pseudo[:1] + u'\u200b' + pseudo[1:] + " @ " + elem['Ville'].title() + " : " + str(elem['Score']))
 	serv.privmsg(canal, "Vainqueur : " + cfg.get('Villes', villes_list[-1]['Ville']).title() + ".")
 	serv.privmsg(canal, "Houra pour " + villes_list[-1]['Ville'].title() + " !")
 

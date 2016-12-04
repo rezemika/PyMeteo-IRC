@@ -34,7 +34,7 @@ La commande "ville" affiche un compte-rendu dense et sobre de la météo d'une v
 - "ville EC1A1AA,UK" affiche la météo de Clerkenwell (un quartier de Londres), au Royaume-Uni.
 
 Voici un exemple de retour de cette commande :
-Oslo (NO) : 17:52 31/10/2016 UTC | T 4.79°C | W 3.58°C | V 1.65m/s | P 4.515mm | N 0mm | C 92% | H 99% | Lat/Lon 59.91° 10.75°
+Oslo (NO) : 17:52 31/10/2016 UTC | T 4.79°C | W 3.58°C | V 1.65m/s | P 4.515mm | N 0mm | C 92% | H 99% | S 463 | Lat/Lon 59.91° 10.75°
 
 - Oslo (NO) : Ville trouvée par l'API, suivie du code de son pays. Peut aussi prendre le nom d'un quartier si la ville est de grande taille.
 - 17:52 31/10/2016 UTC : Moment du relevé météo affiché. Attention, l'heure et la date sont au format UTC.
@@ -45,6 +45,7 @@ Oslo (NO) : 17:52 31/10/2016 UTC | T 4.79°C | W 3.58°C | V 1.65m/s | P 4.515mm
 - N 0mm : Neige sur les trois dernières heures.
 - C 92% : Couverture nuageuse.
 - H 99% : Humidité de l'air.
+- S 463 : Score de la ville.
 - Lat/Lon 59.91° 10.75° : Coordonnées GPS, en degrés décimaux.
 
 ###ville-long
@@ -66,8 +67,6 @@ La commande "score" permet de calculer de manière isolée le score d'une ville.
 Le calcul du score d'une ville tient compte de la température ressentie, de la pluie, de la neige et de la couverture nuageuse.
 
 Voici la formule exacte : (-Windchill) x 100 + neige x 20 + pluie x 80 + nuages x 5
-
-Ou, au format Python : (-windchill_temp)*100 + neige*20 + pluie*80 + nuages*5
 
 La température ressentie est en degrés Celsius, la pluie et la neige sont en millimètres, la couverture nuageuse est un pourcentage.
 

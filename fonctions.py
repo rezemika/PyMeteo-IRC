@@ -43,13 +43,21 @@ read_config()
 
 def meteo_ville_long(serv, ville, pseudo):   # Récupération et affichage de la météo d'une ville (en MP).
     meteo = get_meteo(ville)
+    try: pluie = meteo["rain"]["3h"]
+    except: pluie = 0
+    try: neige = meteo["snow"]["3h"]
+    except: neige = 0
+    temp = round(k2c(float(meteo["main"]["temp"])),2)
+    vent = meteo["wind"]["speed"]
+    windchill_temp = round(windchill(temp, vent),2)
+    nuages = meteo["clouds"]["all"]
+    score_city = calc_score(windchill_temp, neige, pluie, nuages)
     heure_mesure = datetime.utcfromtimestamp(meteo["dt"]).strftime('%H:%M %d/%m/%Y')
     serv.privmsg(pseudo, "Météo de " + meteo['name'] + " (" + str(meteo['sys']['country']) + ") :")
     serv.privmsg(pseudo, "Heure du relevé : " + heure_mesure + " UTC")
     serv.privmsg(pseudo, "Latitude / Longitude : " + str(meteo['coord']['lat']) + str(meteo['coord']['lon']) + "° ")
+    serv.privmsg(pseudo, "Score : " + score_city)
     serv.privmsg(pseudo, " ")
-    temp = round(k2c(float(meteo["main"]["temp"])),2)
-    vent = meteo["wind"]["speed"]
     serv.privmsg(pseudo, id2text(meteo['weather']['id']))
     serv.privmsg(pseudo, "Température : " + str(temp) + "°C")
     serv.privmsg(pseudo, "Windchill : " + str(round(windchill(temp, vent),2)) + "°C")
@@ -57,10 +65,6 @@ def meteo_ville_long(serv, ville, pseudo):   # Récupération et affichage de la
     serv.privmsg(pseudo, "Pression : " + str(meteo["main"]["pressure"]) + "hPa")
     serv.privmsg(pseudo, "Vent : " + str(vent) + "m/s")
     serv.privmsg(pseudo, "Couverture nuageuse : " + str(meteo["clouds"]["all"]) + "%")
-    try: pluie = str(meteo["rain"]["3h"])   # Les clés 'rain' et 'snow' sont absentes en cas d'absence de pluie ou de neige.
-    except: pluie = "0"
-    try: neige = str(meteo["snow"]["3h"])
-    except: neige = "0"
     serv.privmsg(pseudo, "Précipitations : " + pluie + "mm")
     serv.privmsg(pseudo, "Neige : " + neige + "mm")
     serv.privmsg(pseudo, " ")
@@ -68,14 +72,17 @@ def meteo_ville_long(serv, ville, pseudo):   # Récupération et affichage de la
 def meteo_ville(serv, ville):   # Comme la fonction meteo_ville(), mais avec une sortie textuelle plus sobre.
     meteo = get_meteo(ville)
     heure_mesure = datetime.utcfromtimestamp(meteo["dt"]).strftime('%H:%M %d/%m/%Y')
-    try: pluie = str(meteo["rain"]["3h"])
-    except: pluie = "0"
-    try: neige = str(meteo["snow"]["3h"])
-    except: neige = "0"
+    try: pluie = meteo["rain"]["3h"]
+    except: pluie = 0
+    try: neige = meteo["snow"]["3h"]
+    except: neige = 0
     temp = round(k2c(float(meteo["main"]["temp"])),2)
     vent = meteo["wind"]["speed"]
+    windchill_temp = round(windchill(temp, vent),2)
+    nuages = meteo["clouds"]["all"]
+    score_city = calc_score(windchill_temp, neige, pluie, nuages)
     text_meteo = id2text(meteo['weather'][0]['id'])
-    serv.privmsg(canal, meteo['name'] + " (" + str(meteo['sys']['country']) + ") : " + heure_mesure + " UTC | " + text_meteo + " | T " + str(temp) + "°C | W " + str(round(windchill(temp, vent),2)) + "°C | V " + str(vent) + "m/s | P " + pluie + "mm | N " + neige + "mm | C " + str(meteo["clouds"]["all"]) + "% | H " + str(meteo["main"]["humidity"]) + "% | Lat/Lon " + str(meteo['coord']['lat']) + "° " + str(meteo['coord']['lon']) + "°")
+    serv.privmsg(canal, meteo['name'] + " (" + str(meteo['sys']['country']) + ") : " + heure_mesure + " UTC | " + text_meteo + " | T " + str(temp) + "°C | W " + str(windchill_temp) + "°C | V " + str(vent) + "m/s | P " + str(pluie) + "mm | N " + str(neige) + "mm | C " + str(nuages) + "% | H " + str(meteo["main"]["humidity"]) + "% | S " + str(score_city) + " | Lat/Lon " + str(meteo['coord']['lat']) + "° " + str(meteo['coord']['lon']) + "°")
 
 def concours(serv):   # Concours : calcul et affichage des scores.
     villes_list = [{ 'Ville': city, 'Pseudo': nick } for (city, nick) in cfg.items('Villes')]
@@ -101,6 +108,9 @@ def score(ville):   # Calcule et retourne le score d'une ville fournie en argume
     try: neige = meteo["snow"]["3h"]
     except: neige = 0
     windchill_temp = windchill(temp, vent)
+    return calc_score(windchill_temp, neige, pluie, nuages)
+
+def calc_score(windchill_temp, neige, pluie, nuages):
     # Formule originale par vhf : (-temp)*1000 + vent*100 + neige*10 + pluie
     return round(((-windchill_temp)*100 + neige*20 + pluie*80 + nuages*5)) # Calcul du score.
 

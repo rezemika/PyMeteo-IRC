@@ -207,24 +207,3 @@ def add_ville(serv, ville, pseudo):   # Ajout d'une ville pour le concours. Merc
     else:
         config['Villes'][ville] = pseudo
     config.write()
-
-'''
-def rm_ville(serv, ville, pseudo):
-    print(serv, ville, pseudo)
-    from configobj import ConfigObj
-    try:
-        config = ConfigObj('config.cfg', encoding='UTF8')
-        exists = False
-        # Si la ville est déjà dans le fichier de config.
-        try:
-            test_ville = Villes[ville]
-            print(test_ville)
-            exists = True
-        # Gestion d'exception à vérifier.
-        except configparser.NoOptionError:
-            pass
-    except Exception as e:
-        serv.privmsg(canal, "Erreur critique à la lecture du fichier 'config.cfg'.")
-        serv.privmsg(canal, "Erreur : " + str(e))
-        return
-'''

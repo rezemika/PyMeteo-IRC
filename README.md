@@ -60,6 +60,9 @@ Retourne la liste de toutes les villes enregistrées dans le fichier de configur
 ###concours go
 Cette commande calcule le score de chaque ville concourante enregistrée dans le fichier de configuration, puis les affiche par ordre croissant. Enfin, elle donne le pseudo du vainqueur, et affiche un message "gratifiant" pour sa ville.
 
+###concours add-ville
+Cette commande permet de rajouter une ville dans la liste des villes concourantes. Cette fonction nécessite la librairie Python configobj. Elle peut-être désactivée en commentant la fonction add_ville() dans fonctions.py et son appel dans le fichier meteo-bot.py. Elle s'utilise ainsi : "concours add-ville VILLE PSEUDO".
+
 ###score
 La commande "score" permet de calculer de manière isolée le score d'une ville. La ville doit être indiquée de la même manière que pour la commande "ville".
 
@@ -79,14 +82,14 @@ Il nécessite les modules suivants :
 - requests
 - configparser
 - operator
+- configobj : seulement pour "concours add-ville"
 
 ##Configuration
 Le fichier config.cfg contient trois sections : [General], [Villes] et [Keywords]. La section [Villes] n'est utilisée que pour la fonction de concours. Elle peut-être laissée vide si celle-ci n'est pas utilisée. Ce fichier doit être dans le même dossier que le fichier du script.
 
-La section [General] contient les "paramètres vitaux" du bot. La clé "serveur" prend une adresse de serveur IRC. La clé "cannal" prend le nom du canal où le bot devra se connecter. Le nom de canal devra être écrit avec le croisillon "#".
+La section [General] contient les "paramètres vitaux" du bot. La clé "serveur" prend une adresse de serveur IRC. La clé "cannal" prend le nom du canal où le bot devra se connecter. Le nom de canal ne devra PAS être écrit avec le croisillon "#". Écrivez "canal" et non "#canal".
 
 La section [Ville] contient les candidats au concours. Les clés sont les villes, et leurs concourants sont marqués comme valeur de la clé correspondante. Voici un exemple, où les utilisateurs Pierre, Paul et Jacques concourent respectivement pour les villes de Paris, Québec et Acapulco.
-
 
 Paris = Pierre
 
@@ -110,3 +113,5 @@ rezemika : écriture
 vhf : aide pour l'écriture
 
 Pesticide : aide pour le portage sous Python 3
+
+entwanne : aide pour la fonction d'ajout de concourants

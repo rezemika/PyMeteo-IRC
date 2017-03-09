@@ -36,6 +36,8 @@ class BotMeteo(irc.bot.SingleServerIRCBot):
         message = ev.arguments[0]
         if message[0:len(name)].lower() == name.lower():
             com = message[8:].lstrip().split()   # Création d'une liste 'com' contenant les opérandes de la commande.
+            if com == []:
+                serv.privmsg(canal, "Erreur : commande vide.")
             com[0] = com[0].lower()   # Passage de la commande en minuscule.
             if com[0] == ':' or com[0] == ',':
                 com.pop(0)

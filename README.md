@@ -1,7 +1,7 @@
 # PyMeteo-IRC
 Un bot IRC codé en Python, permettant d'afficher la météo et de gérer un "concours de mauvais temps".
 
-##Présentation
+## Présentation
 PyMeteo est un bot IRC fonctionnant avec Python 3. Il peut être configuré grâce à un fichier config.cfg, contenant la configuration générale du bot, la liste des villes et des personnes "inscrites" au concours, ainsi que les traductions des expressions météos. Il contient également un fichier fonctions.py, qui doit être dans le même dossier que le fichier principal, et qui contient les fonctions en relation directe avec l'API météorologique. Il affiche des messages de statut sur le terminal qui l'exécute, permettant de connaître le statut du bot sans être connecté au canal IRC.
 
 Ces messages s'affichent :
@@ -15,18 +15,18 @@ Ces trois derniers messages sont accompagnés de leur moment d'affichage, au for
 Les messages indiquant l'exécution d'une commande donnent également le pseudo de l'émetteur de cette commande.
 Exemple de message : "Commande 'concours' émise par rezemika à 13:36 24/12/2016".
 
-##Utilisation
+## Utilisation
 Dès que le bot est connecté au canal, le programme affiche le moment précis de son arrivée sur le terminal qui l'éxecute. Il affichera également un message sur le canal, qui peut-être modifié dans le fichier de configuration (avec la clé "message_join").
 Le bot doit être appelé par son pseudo (PyMeteo), qui peut être suivi ou non d'un symbole. La commande qui suit l'appel du bot n'est pas sensible à la casse.
 Ces trois commandes sont donc valides : "PyMeteo aide", "PyMeteo: Aide" ou "PyMeteo, aide".
 
-###aide / help
+### aide / help
 La commande "aide", qui peut aussi être appelée avec "help", envoie un MP à l'utilisateur qui l'a envoyé. Ce dernier contient la liste de toutes les commandes utilisables et leur usage, ainsi que les crédits et la licence du code.
 
-###kill
+### kill
 Cette commande demande au bot de se déconnecter. Il affiche alors un message, modifiable dans le fichier de configuration (avec la clé "message_quit"), avant de quitter le canal et de stopper l'éxecution du programme.
 
-###ville
+### ville
 La commande "ville" affiche un compte-rendu dense et sobre de la météo d'une ville. Cette commande doit être suivie, soit du nom de la ville, soit de son code postal. Il est aussi possible (et recommandé) de le faire suivre du code du pays.
 
 - "ville Paris" affiche la météo de Paris.
@@ -48,32 +48,32 @@ Oslo (NO) : 17:52 31/10/2016 UTC | T 4.79°C | W 3.58°C | V 1.65m/s | P 4.515mm
 - S 463 : Score de la ville.
 - Lat/Lon 59.91° 10.75° : Coordonnées GPS, en degrés décimaux.
 
-###ville-long
+### ville-long
 Cette commande s'appelle de la même manière que la commande "ville". La différence réside dans le fait que celle-ci retourne la météo sous la forme d'un texte plus explicite. L'envoi se fait par MP à l'utilisateur émetteur de la commande, afin de ne pas "noyer" le canal.
 
-###ephem
+### ephem
 La commande "ephem" affiche l'éphéméride de la ville qu'on lui passe en argument, en heures UTC (au format HH:MM:SS). Voici par exemple le retour de "PyMeteo: ephem Québec" : "Éphéméride UTC pour Québec (CA) : 11:59:20 / 21:03:51".
 
-###concours villes-list
+### concours villes-list
 Retourne la liste de toutes les villes enregistrées dans le fichier de configuration, ainsi que leurs concourants respectifs.
 
-###concours go
+### concours go
 Cette commande calcule le score de chaque ville concourante enregistrée dans le fichier de configuration, puis les affiche par ordre croissant. Enfin, elle donne le pseudo du vainqueur, et affiche un message "gratifiant" pour sa ville.
 
-###concours add-ville
+### concours add-ville
 Cette commande permet de rajouter une ville dans la liste des villes concourantes. Cette fonction nécessite la librairie Python configobj. Elle peut-être désactivée en commentant la fonction add_ville() dans fonctions.py et son appel dans le fichier meteo-bot.py. Elle s'utilise ainsi : "concours add-ville VILLE PSEUDO".
 
-###score
+### score
 La commande "score" permet de calculer de manière isolée le score d'une ville. La ville doit être indiquée de la même manière que pour la commande "ville".
 
-##Concours
+## Concours
 Le calcul du score d'une ville tient compte de la température ressentie, de la pluie, de la neige et de la couverture nuageuse.
 
 Voici la formule exacte : (-Windchill) x 100 + neige x 20 + pluie x 80 + nuages x 5
 
 La température ressentie est en degrés Celsius, la pluie et la neige sont en millimètres, la couverture nuageuse est un pourcentage.
 
-##Python
+## Python
 Ce bot a été testé et est fonctionnel au moins avec la version 3.5.1 de Python.
 Il nécessite les modules suivants :
 - irc
@@ -84,7 +84,7 @@ Il nécessite les modules suivants :
 - operator
 - configobj : seulement pour "concours add-ville"
 
-##Configuration
+## Configuration
 Le fichier config.cfg contient trois sections : [General], [Villes] et [Keywords]. La section [Villes] n'est utilisée que pour la fonction de concours. Elle peut-être laissée vide si celle-ci n'est pas utilisée. Ce fichier doit être dans le même dossier que le fichier du script.
 
 La section [General] contient les "paramètres vitaux" du bot. La clé "serveur" prend une adresse de serveur IRC. La clé "cannal" prend le nom du canal où le bot devra se connecter. Le nom de canal ne devra PAS être écrit avec le croisillon "#". Écrivez "canal" et non "#canal".
@@ -99,15 +99,15 @@ Acapulco = Jacques
 
 La section [Keywords] contient toutes les expressions utilisables par le bot, décrivant la météo d'une ville. L'API météorologique retournant un ID spécifique à chaque phénomène météo, cette section contient la description en français de ces ID. Leur liste peut être trouvée ici : https://openweathermap.org/weather-conditions.
 
-##API
+## API
 Ce programme utilises l'API OpenWeatherMap (openweathermap.org), qui fourni des données météorologiques sous licence CC By-SA 4.0.
 
 Pour plus d'informations : http://openweathermap.org/current
 
-##Licence
+## Licence
 Ce programme ainsi que sa documentation ici-présente est publié sous licence GPL v3. Vous êtes donc libres de le partager ou de le modifier, selon les termes de la licence GPL.
 
-##Crédits
+## Crédits
 rezemika : écriture
 
 vhf : aide pour l'écriture
